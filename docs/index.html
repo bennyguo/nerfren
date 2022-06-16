@@ -1,116 +1,464 @@
-<!doctype html>
-<html class="no-js" lang="">
-
+<!DOCTYPE html>
+<html>
 <head>
   <meta charset="utf-8">
-  <title></title>
-  <meta name="description" content="">
+  <meta name="description"
+        content="NeRFReN is able to model scenes with reflections.">
+  <meta name="keywords" content="NeRFReN, NeRF">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NeRFReN: Neural Radiance Fields with Reflections</title>
 
-  <meta property="og:title" content="">
-  <meta property="og:type" content="">
-  <meta property="og:url" content="">
-  <meta property="og:image" content="">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
 
-  <!-- Place favicon.ico in the root directory -->
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
 
-  <link rel="stylesheet" href="static/css/normalize.css">
-  <link rel="stylesheet" href="static/css/main.css">
-  <link rel="stylesheet" href="static/css/customize.css">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-
-  <meta name="theme-color" content="#fafafa">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-
 <body>
-  <!-- Add your site or application content here -->
-  <div class="bg-light p-5 rounded-lg m-3 text-center">
-    <h1 class="display-5">NeRF<span class="flip">NeR</span>:<br>Neural Radiance Fields with Reflections</h1>
-    <p class="lead">Yuan-Chen Guo<sup>1</sup>&emsp;Di Kang<sup>2</sup>&emsp;Linchao Bao<sup>2</sup>&emsp;Yu He<sup>3</sup>&emsp;Song-Hai Zhang<sup>1</sup></p>
-    <p class="lead">
-      <sup>1</sup>BNRist, Department of Computer Science and Technology, Tsinghua University, Beijing<br>
-      <sup>2</sup>Tencent AI Lab&emsp;<sup>3</sup>BIMSA
-    </p>
-    <hr class="my-4">
-    <a class="btn btn-primary btn-lg" href="https://arxiv.org/abs/2111.15234" role="button" target="_blank">arXiv</a>
-    <a class="btn btn-primary btn-lg disabled" role="button" target="_blank">Code (Coming)</a>
-    <a class="btn btn-primary btn-lg disabled" role="button" target="_blank">Data (Coming)</a>
+
+<!-- <nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
   </div>
-  <div class="content-wrapper">
-    <div class="row justify-content-center">
-      <div class="col-12">
-        <div class="section-wrapper mb-5">
-          <h2 class="text-center">Abstract</h2>
-          <p>Neural Radiance Fields (NeRF) has achieved unprecedented view synthesis quality using coordinate-based neural scene representations. However, NeRF's view dependency can only handle simple reflections like highlights but cannot deal with complex reflections such as those from glass and mirrors. In these scenarios, NeRF models the virtual image as real geometries which leads to inaccurate depth estimation, and produces blurry renderings when the multi-view consistency is violated as the reflected objects may only be seen under some of the viewpoints. To overcome these issues, we introduce NeRFReN, which is built upon NeRF to model scenes with reflections. Specifically, we propose to split a scene into transmitted and reflected components, and model the two components with separate neural radiance fields. Considering that this decomposition is highly under-constrained, we exploit geometric priors and apply carefully-designed training strategies to achieve reasonable decomposition results. Experiments on various self-captured scenes show that our method achieves high-quality novel view synthesis and physically sound depth estimation results while enabling scene editing applications.</p>
-          <div class="row justify-content-center">
-            <div class="col-lg-10">
-              <img src="static/media/teaser.png" class="img-fluid">
-            </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item" href="https://keunhong.com">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="">
+            ResearchItem
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav> -->
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">NeRF<span class="flip">NeR</span>:<br>Neural Radiance Fields with Reflections</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="">Yuan-Chen Guo</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="">Di Kang</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="">Linchao Bao</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="">Yu He</a><sup>3</sup>,
+            </span>
+            <span class="author-block">
+              <a href="">Song-Hai Zhang</a><sup>1</sup>,
+            </span>
           </div>
-        </div>
-        <div class="section-wrapper mb-5">
-          <h2 class="text-center">Formulation</h2>
-          <p>Instead of representing the whole scene with a single neural radiance field, we propose to model the <i>transmitted</i> and <i>reflected</i> parts of the scene with separate neural radiance fields. To synthesize novel views, the transmitted image \(I_t\) and reflected image \(I_r\) rendered by the corresponding fields are composed in an additive fashion, where the reflected image \(I_r\) is weighted by a learned <i>reflection fraction map</i> \(\mathbf{\beta}\): \[I = I_t + \mathbf{\beta} I_r\] The network architecture is illustrated as follow:</p>
-          <div class="row justify-content-center">
-            <div class="col-sm-8 col-lg-6">
-              <img src="static/media/network.png" class="img-fluid">
-            </div>
-          </div>          
-        </div>
-        <div class="section-wrapper mb-5">
-          <h2 class="text-center">Decomposition Results</h2>
-          <p>NeRFReN is able to split the scene into transmitted and reflected components and estimate physically more correct depth (column 3) due to this decomposition. Novel views (column 1) can be synthesized by combining the transmitted (column 2) and reflected (column 5) images by the predicted reflection fraction map (column 4).</p>
-          <div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/decomposition/bookcase.m4v" type="video/mp4"></div>
-          <div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/decomposition/mirror.m4v" type="video/mp4"></div>
-          <div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/decomposition/tv.m4v" type="video/mp4"></div>
-          <div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/decomposition/art1.m4v" type="video/mp4"></div>
-          <div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/decomposition/art2.m4v" type="video/mp4"></div>
-          <div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/decomposition/art3.m4v" type="video/mp4"></div>
-        </div>
-        <div class="section-wrapper mb-5">
-          <h2 class="text-center">Comparisons with NeRF</h2>
-          <p>Compared with NeRF (right), NeRFReN (left) can achieve promising view synthesis results with more correct depth estimation. Benefit from the separate modeling of transmitted and reflected components, NeRFReN can handle hard cases like the <i>mirror</i> scene, where NeRF cannot synthesize correct views for some viewing directions.</p>
-          <div class="row">
-            <div class="col-lg-6"><div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/comparisons/bookcase.m4v" type="video/mp4"></div></div>
-            <div class="col-lg-6"><div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/comparisons/mirror.m4v" type="video/mp4"></div></div>
-            <div class="col-lg-6"><div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/comparisons/tv.m4v" type="video/mp4"></div></div>
-            <div class="col-lg-6"><div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/comparisons/art1.m4v" type="video/mp4"></div></div>
-            <div class="col-lg-6"><div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/comparisons/art2.m4v" type="video/mp4"></div></div>
-            <div class="col-lg-6"><div class="embed-responsive"><video controls autoplay loop><source src="static/media/videos/comparisons/art3.m4v" type="video/mp4"></div></div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Tsinghua University,</span>
+            <span class="author-block"><sup>2</sup>Tencent AI Lab,</span>
+            <span class="author-block"><sup>3</sup>BIMSA</span>
           </div>
-        </div>
-        <div class="section-wrapper mb-5">
-          <h2 class="text-center">Applications</h2>
-          <p>
-          Our formulation naturally supports the application for reflection removal by taking only the transmitted image (see column 3 of the decomposition results). We can also achieve reflection substitution by replacing the reflection image \(I_r\) by images coming from other neural radiance fields, or even from other scene representations like mesh. Here shows two examples of replacing the reflections with images rendered from another NeRF model trained on the <i>room</i> scene of the LLFF dataset. This could be further promoted to synthesize self-reflections of the user to provide even more immersive experiences.
-          </p>
-          <img src="static/media/application.png" class="img-fluid">         
-        </div>        
-        <div class="section-wrapper mb-5">
-          <h2 class="text-center">Citation</h2>
-          <pre class="bg-light"><code>
-  @misc{guo2021nerfren,
-    title={NeRFReN: Neural Radiance Fields with Reflections}, 
-    author={Yuan-Chen Guo and Di Kang and Linchao Bao and Yu He and Song-Hai Zhang},
-    year={2021},
-    eprint={2111.15234},
-    archivePrefix={arXiv},
-    primaryClass={cs.CV}
-  }
-          </code></pre>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://openaccess.thecvf.com/content/CVPR2022/html/Guo_NeRFReN_Neural_Radiance_Fields_With_Reflections_CVPR_2022_paper.html"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2111.15234"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=uZin1Ynk6SM"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <!-- <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span> -->
+              <!-- Dataset Link. -->
+              <span class="link-block">
+                <a href="https://drive.google.com/file/d/1UFHdcLgn9wXBcYZVM5qojYP1NNpg5bsS/view?usp=sharing"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+            </div>
+
+          </div>
         </div>
       </div>
     </div>
   </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body has-text-centered">
+      <img width="75%" src="static/media/teaser.png">
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Neural Radiance Fields (NeRF) has achieved unprecedented view synthesis quality 
+            using coordinate-based neural scene representations. 
+            However, NeRF's view dependency can only handle simple reflections like highlights 
+            but cannot deal with complex reflections such as those from glass and mirrors. 
+            In these scenarios, NeRF models the virtual image as real geometries 
+            which leads to inaccurate depth estimation, and produces blurry renderings 
+            when the multi-view consistency is violated as the reflected objects 
+            may only be seen under some of the viewpoints. 
+            To overcome these issues, we introduce NeRFReN, which is built upon NeRF 
+            to model scenes with reflections. Specifically, we propose to split a scene 
+            into transmitted and reflected components, and model the two components 
+            with separate neural radiance fields. Considering that this decomposition 
+            is highly under-constrained, we exploit geometric priors and 
+            apply carefully-designed training strategies to achieve reasonable decomposition results. 
+            Experiments on various self-captured scenes show that our method achieves 
+            high-quality novel view synthesis and physically sound depth estimation results 
+            while enabling scene editing applications.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Formulation. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Formulation</h2>
+        <div class="content has-text-justified">
+          <p>
+            Instead of representing the whole scene with a single neural radiance field,
+            we propose to model the <i>transmitted</i> and <i>reflected</i> parts of the scene 
+            with separate neural radiance fields. To synthesize novel views, 
+            the transmitted image \(I_t\) and reflected image \(I_r\) rendered 
+            by the corresponding fields are composed in an additive fashion, 
+            where the reflected image \(I_r\) is weighted by a learned 
+            <i>reflection fraction map</i> \(\mathbf{\beta}\): \[I = I_t + \mathbf{\beta} I_r\] 
+            The network architecture is illustrated as follow:
+          </p>
+        </div>
+        <div class="has-text-centered">
+          <img width="50%" src="static/media/network.png">
+        </div>        
+      </div>
+    </div>    
+    <!--/ Formulation. -->
+
+    <!-- Paper video. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/watch?v=uZin1Ynk6SM"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+    <!--/ Paper video. -->
+  </div>
+</section>
 
 
-  <script src="static/js/vendor/modernizr-3.11.2.min.js"></script>
-  <script src="static/js/plugins.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>  
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>  
-  <script src="static/js/main.js"></script>
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Decomposition Results</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            NeRFReN is able to split the scene into transmitted and reflected components 
+            and estimate physically more correct depth (column 3) due to this decomposition. 
+            Novel views (column 1) can be synthesized by combining the transmitted (column 2) 
+            and reflected (column 5) images by the predicted reflection fraction map (column 4).
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/decomposition/bookcase.m4v"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/decomposition/art1.m4v"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/decomposition/art2.m4v"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/decomposition/art3.m4v"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/decomposition/mirror.m4v"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/decomposition/tv.m4v"
+                    type="video/mp4">
+          </video>
+        </div>                                        
+
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Comparisons with NeRF</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            Compared with NeRF (right), NeRFReN (left) can achieve promising view synthesis results 
+            with more correct depth estimation. Benefit from the separate modeling of transmitted and reflected components, 
+            NeRFReN can handle hard cases like the <i>mirror</i> scene, 
+            where NeRF cannot synthesize correct views for some viewing directions.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column">
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/comparisons/bookcase.m4v"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/comparisons/art2.m4v"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/comparisons/mirror.m4v"
+                    type="video/mp4">
+          </video>
+        </div>                                 
+      </div>
+      <div class="column">
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/comparisons/art1.m4v"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/comparisons/art3.m4v"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="100%">
+            <source src="static/media/videos/comparisons/tv.m4v"
+                    type="video/mp4">
+          </video>
+        </div>                                        
+      </div>      
+    </div>    
+
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Applications</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            Our formulation naturally supports the application for reflection removal by taking 
+            only the transmitted image (see column 3 of the decomposition results). 
+            We can also achieve reflection substitution by replacing the reflection image \(I_r\) 
+            by images coming from other neural radiance fields, or even from other scene representations like mesh. 
+            Here shows two examples of replacing the reflections with images rendered from another NeRF model 
+            trained on the <i>room</i> scene of the LLFF dataset. This could be further promoted to 
+            synthesize self-reflections of the user to provide even more immersive experiences.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <img width="75%" src="static/media/application.png">
+        </div>
+      </div>
+    </div> 
+
+  </div>
+</section>
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@InProceedings{Guo_2022_CVPR,
+      author    = {Guo, Yuan-Chen and Kang, Di and Bao, Linchao and He, Yu and Zhang, Song-Hai},
+      title     = {NeRFReN: Neural Radiance Fields With Reflections},
+      booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+      month     = {June},
+      year      = {2022},
+      pages     = {18409-18418}
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <!-- <div class="content has-text-centered">
+      <a class="icon-link"
+         href="">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div> -->
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            The website template was borrowed from <a href="https://nerfies.github.io/">https://nerfies.github.io/</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
 
 </body>
-
 </html>
