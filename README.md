@@ -7,12 +7,13 @@ This is the code release for our CVPR2022 paper, NeRFReN: Neural Radiance Fields
 
 ## Update
 - 07/28/2022: Initial code release.
+- 08/01/2022: Pretrained models for all RFFR scenes are released.
 
 ## Setup
 - Install PyTorch>=1.8
 - Install other dependencies: `pip install -r requirements.txt`
 - Download our Real Forward Facing with Reflections (RFFR) dataset from [Google Drive](https://drive.google.com/file/d/1UFHdcLgn9wXBcYZVM5qojYP1NNpg5bsS/view?usp=sharing), and extract to `load/`
-- (Optional) Download pretrained models from [Google Drive](https://drive.google.com/file/d/13Im7uA2OAjSxxDm6oP4GRiC82nP1QEvM/view?usp=sharing), and extract to `checkpoints/` (Currently only the art1 scene is available. We will upload pretrained models for all the 6 scenes as soon as possible.)
+- (Optional) Download pretrained models from [Google Drive](https://drive.google.com/file/d/13Im7uA2OAjSxxDm6oP4GRiC82nP1QEvM/view?usp=sharing), and extract to `checkpoints/`
 
 The correct file structure should be like:
 
